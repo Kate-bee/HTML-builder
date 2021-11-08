@@ -55,3 +55,28 @@ const copyDir = async (source, destination) => {
 };
 
 copyDir(sourceAssets, destinationDir);
+
+
+const template = path.join(__dirname, 'template.html');
+const components = path.join(__dirname, 'components');
+function copyHtml(template, components) {
+    fs.readFile(template, (err, template) => {
+        if (err) throw err;
+        let html = template.toString();
+        fs.readdir(components, (err, arr) => {
+            if (err) throw err;
+            arr.forEach((el) => {
+                let tag = el.split(".")[0];
+                const re = new RegExp(`{{${tag}}}`);
+                fs.readFile(path.join(components, el), (err, data) => {
+                    if (err) throw err;
+                    html = html.replace(re, data);
+                    setTimeout(() => fs.writeFile(path.join(__dirname, "project-dist", "index.html"), html, (err) => {
+                        if (err) throw err;
+                    }), 3000);
+                });
+            });
+        });
+    });
+}
+copyHtml(template, components);
