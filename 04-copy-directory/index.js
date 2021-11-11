@@ -1,21 +1,25 @@
 const fs = require('fs');
 const path = require('path');
-const sourceDir = path.join(__dirname, "./files");
-const destinationDir = path.join(__dirname, "./files-copy");
-async function createFolder() {
-    await fs.rmdir(destinationDir, { recursive: true, force: true }, err => {
+const sourceDir = path.join(__dirname, "files");
+const destinationDir = path.join(__dirname, "files-copy");
+
+async function deleteFolder() {
+    const prom = fs.promises;
+    await prom.rmdir(destinationDir, { recursive: true, force: true }, (err) => {
         if (err) throw err;
-        fillFolder();
     });
-    await fs.mkdir(destinationDir, { recursive: true }, (err) => {
+
+}
+
+async function createFolder() {
+
+    await fs.mkdir(destinationDir, {}, (err) => {
         if (err) throw err;
     });
 
 }
 async function fillFolder() {
-    await fs.mkdir(destinationDir, { recursive: true }, err => {
-        if (err) throw err;
-    });
+
     await fs.readdir(sourceDir, { withFileTypes: true }, (err, array) => {
         if (err) throw err;
         array.forEach(el => {
@@ -27,4 +31,10 @@ async function fillFolder() {
         });
     });
 }
-createFolder();
+async function go() {
+    await deleteFolder();
+    await createFolder();
+    await fillFolder();
+}
+
+go();
